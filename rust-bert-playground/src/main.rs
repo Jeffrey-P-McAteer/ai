@@ -26,14 +26,6 @@ fn main() {
 
     let qa_model = QuestionAnsweringModel::new(Default::default()).expect("No models available!");
 
-//     let context = r#"
-//       Arch Linux is a fun operating system.
-//       Linus Torvalds wrote the Linux kernel.
-//       Arch Linux is based on the Linux kernel.
-//       Ice cream is cold.
-//       Ice cream is tasty.
-// "#.to_string();
-    
     let mut context = String::new();
     // Context is built by reading from the directory given in arg[1]
 
@@ -60,22 +52,6 @@ fn main() {
         }
       }
     }
-
-    // let questions = [
-    //   "Who helped write Arch Linux?",
-    //   "Does the linux kernel use Arch Linux?",
-    //   "Are cold things tasty?",
-    //   "Why are cold things tasty?",
-    // ];
-
-    // for question_ref in questions {
-    //   let question = question_ref.to_string();
-    //   let context = context.clone();
-    //   let answers = qa_model.predict(&[QaInput { question, context }], 1, 32);
-    //   let question_txt = format!("{:?}", question_ref.to_string());
-    //   let answer_txt = format!("{:?}", answers[0][0].answer);
-    //   println!("{} => {}", question_txt, bold_style.paint(&answer_txt) );
-    // }
 
     println!("Computing answers...");
     let question_copy = question.clone();
