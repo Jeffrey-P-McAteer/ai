@@ -77,6 +77,7 @@ fn main() {
     //   println!("{} => {}", question_txt, bold_style.paint(&answer_txt) );
     // }
 
+    println!("Computing answers...");
     let question_copy = question.clone();
     let answers = qa_model.predict(&[QaInput { question, context }], 1, 32);
     for answer in answers {
