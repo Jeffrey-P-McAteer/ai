@@ -104,10 +104,14 @@ Install Setup:
 
   python -c 'import torch ; print("GPU detected: ", torch.cuda.is_available())'
 
+  # For invokeAI on nvidia
+  pip install --user "InvokeAI[xformers]" --use-pep517 --extra-index-url https://download.pytorch.org/whl/cu117
+
+
 
 Running:
   
-  invokeai --precision=float32 --free_gpu_mem --web --host 127.0.0.1
+  invokeai --web --host 127.0.0.1
 
   stable-diffusion-ui-server
 
