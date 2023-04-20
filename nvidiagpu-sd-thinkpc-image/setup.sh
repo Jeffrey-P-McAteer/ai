@@ -100,6 +100,8 @@ Install Setup:
   yay -S nvidia cuda
   # Also we'll have to boot using the regular kernel -_-...
 
+  export DRI_PRIME=1
+
   python -c 'import torch ; print("GPU detected: ", torch.cuda.is_available())'
 
 
