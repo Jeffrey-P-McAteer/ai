@@ -55,11 +55,11 @@ fn main() {
 
     println!("Computing answers...");
     let question_copy = question.clone();
-    let answers = qa_model.predict(&[QaInput { question, context }], 1, 32);
+    let answers = qa_model.predict(&[QaInput { question, context }], 5,  4096);
     for answer in answers {
       for a in answer {
         let answer_txt = format!("{:?}", a.answer);
-        println!("{} => {}", question_copy, bold_style.paint(answer_txt) );
+        println!("{} {}% => {}", question_copy, (a.score * 100.0).round() / 100.0, bold_style.paint(answer_txt) );
       }
     }
 
