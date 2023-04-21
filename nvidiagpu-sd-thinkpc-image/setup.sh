@@ -107,7 +107,8 @@ Install Setup:
   # For invokeAI on nvidia
   pip install --user "InvokeAI[xformers]" --use-pep517 --extra-index-url https://download.pytorch.org/whl/cu117
 
-
+  export PATH=\$PATH:\$HOME/.local/bin
+  
 
 Running:
   
