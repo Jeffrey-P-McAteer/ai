@@ -1,12 +1,46 @@
 
 use std::env;
+use std::path::Path;
 
 use rust_bert::pipelines::question_answering::{QaInput, QuestionAnsweringModel};
 use elapsed;
 use ansi_term;
 
 fn main() {
-  env::set_var("RUSTBERT_CACHE", "/j/infra/ai/ai-disk/rust-bert-model-cache");
+  let mut rustbert_cache_dir = String::from(
+    "./target/rust-bert-model-cache"
+  );
+
+  if let Ok(env_rustbert_cache_dir) = env::var("RUSTBERT_CACHE") {
+    rustbert_cache_dir = env_rustbert_cache_dir.clone();
+  }
+
+  // idiot-proof cache dir test first
+  if !Path::new(&rustbert_cache_dir).is_dir() && rustbert_cache_dir.contains("target") {
+    eprintln!(r#"WARNING: the directory specified by your environment variable[1] "RUSTBERT_CACHE" (or default directory) {:?} does not exist!
+Creating the cache directory because we see "target" in the path..
+"#, &rustbert_cache_dir);
+    if let Err(e) = std::fs::create_dir_all(&rustbert_cache_dir) {
+      eprintln!("");
+      eprintln!(r#"WARNING: Could not create {:?}, error - {:?} "#, &rustbert_cache_dir, e);
+      eprintln!("");
+    }
+  }
+  
+  println!("rustbert_cache_dir = {}", &rustbert_cache_dir);
+  env::set_var("RUSTBERT_CACHE", &rustbert_cache_dir);
+
+  if !Path::new(&rustbert_cache_dir).is_dir() {
+    eprintln!(r#"Error: the directory specified by your environment variable[1] "RUSTBERT_CACHE" (or default directory) {:?} does not exist!
+
+You must create a directory and set the environment variable "RUSTBERT_CACHE" to it before running rust-bert-playground[.exe].
+
+During the first run the BERT language model will be downloaded here.
+
+"#, std::fs::canonicalize(&rustbert_cache_dir) );
+    std::process::exit(1);
+  }
+
   let args: Vec<String> = env::args().collect();
 
   println!("args = {:?}", &args);
@@ -29,7 +63,7 @@ fn main() {
     let mut context = String::new();
     // Context is built by reading from the directory given in arg[1]
 
-    let walker = globwalk::GlobWalkerBuilder::from_patterns(directory, &["*.{pdf,PDF}"])
+    let walker = globwalk::GlobWalkerBuilder::from_patterns(directory, &["*.{pdf,PDF}", "*.{txt,TXT}"])
       .max_depth(12)
       .follow_links(true)
       .build()
@@ -37,19 +71,46 @@ fn main() {
       .into_iter()
       .filter_map(Result::ok);
 
-    for pdf_file in walker {
-      println!("Reading {:?}", pdf_file);
-      if let Ok(bytes) = std::fs::read( pdf_file.path() ) {
-        match pdf_extract::extract_text_from_mem(&bytes) {
-          Ok(pdf_text) => {
-            println!("Read {} characters!", pdf_text.len());
-            context += &pdf_text;
-            context += "\n";
-          }
-          Err(e) => {
-            eprintln!("Error: {:?}", e);
+    for any_file in walker {
+      if any_file.file_name().to_string_lossy().ends_with("pdf") || any_file.file_name().to_string_lossy().ends_with("PDF") {
+        let pdf_file = any_file;
+        println!("Reading PDF file {:?}", pdf_file);
+        if let Ok(bytes) = std::fs::read( pdf_file.path() ) {
+          match pdf_extract::extract_text_from_mem(&bytes) {
+            Ok(pdf_text) => {
+              println!("Read {} characters!", pdf_text.len());
+              context += &pdf_text;
+              context += "\n";
+            }
+            Err(e) => {
+              eprintln!("Error: {:?}", e);
+            }
           }
         }
+      }
+      else if any_file.file_name().to_string_lossy().ends_with("txt") || any_file.file_name().to_string_lossy().ends_with("TXT") {
+        let txt_file = any_file;
+        println!("Reading TXT file {:?}", txt_file);
+        if let Ok(bytes) = std::fs::read( txt_file.path() ) {
+          match std::str::from_utf8(&bytes) {
+            Ok(txt_text) => {
+              println!("Read {} characters!", txt_text.len());
+              context += &txt_text;
+              context += "\n";
+            },
+            Err(e) => {
+              eprintln!("Error: {:?}", e);
+              eprintln!("Using lossy bytes... (invalid utf-8 text will be decoded as junk utf-8 codes)");
+              let txt_text = String::from_utf8_lossy(&bytes);
+              println!("Read {} (possibly junk nonsense) characters!", txt_text.len());
+              context += &txt_text;
+              context += "\n";
+            }
+          }
+        }
+      }
+      else {
+        println!("Ignoring unknown file {:?}", any_file);
       }
     }
 

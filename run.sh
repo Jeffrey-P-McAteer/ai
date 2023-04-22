@@ -73,6 +73,9 @@ export ENVIRONMENT_NAME=$(echo "$subdirectory" | tr -d '/' | tr -d '.')
 if [ -e ./setup.sh ]; then
   exec ./setup.sh
 else
+  # Misc shared/common env vars for my machine
+  export RUSTBERT_CACHE='/j/infra/ai/ai-disk/rust-bert-model-cache'
+
   cat <<EOF
 
 Dropping to a shell on $HOST at $ENVIRONMENT_NAME
