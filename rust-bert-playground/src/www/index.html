@@ -13,14 +13,12 @@
     <div id="documents">
       <form id="document-input-form" action="/add-document" method="POST" enctype="multipart/form-data" target="devnull" onsubmit="clear_document_form();" style="border: 1pt solid; border-radius: 8pt;">
         <b style="margin:2pt 4pt;">Add Document</b>
-        <input type="file" id="document" name="document" style="width:65%;" />
+        <input type="file" id="document" name="document" multiple style="width:65%;" />
         <input type="submit" value="Add Document" />
       </form>
 
     </div>
-    <p id="responses">
-      TODO TODO TODO
-    </p>
+    <pre id="responses" style="min-height: 30vh;"></pre>
     <form id="question-input-form" action="/ask-question" method="POST" target="devnull" onsubmit="clear_question_form();">
       <input type="text" id="q" name="q" placeholder="Who wrote this?" style="width:90%;" />
       <input type="submit" value="Ask" style="width:6%;" />

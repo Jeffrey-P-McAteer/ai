@@ -20,3 +20,8 @@ hyper = "0.10"
 websocket = "0.26"
 include_dir = "0.7"
 multipart = "0.14"
+lazy_static = "1.4"
+words-count = "0.1"
+urldecode = "0.1"
+
+
