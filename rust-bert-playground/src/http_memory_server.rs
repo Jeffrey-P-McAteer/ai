@@ -120,7 +120,7 @@ pub fn run_server(ip_and_port: String) {
     question_answering_thread();
   });
 
-  let num_threads = 8; // Limits max websocket connections available b/c we consume an entire thread for those
+  let num_threads = 32; // Limits max websocket connections available b/c we consume an entire thread for those
 
   Server::http(&ip_and_port).unwrap().handle_threads(move |req: Request, res: Response| {
     let query_documents_arc = QUERY_DOCUMENTS.clone();
