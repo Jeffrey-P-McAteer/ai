@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>RustBert Document Analysis Server</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <h1 style="margin:0;">RustBert Document Analysis Server</h1>
+    <br>
+    <div id="documents">
+      <form id="document-input-form" action="/add-document" method="POST" enctype="multipart/form-data" target="devnull" onsubmit="clear_document_form();" style="border: 1pt solid; border-radius: 8pt;">
+        <b style="margin:2pt 4pt;">Add Document</b>
+        <input type="file" id="document" name="document" style="width:65%;" />
+        <input type="submit" value="Add Document" />
+      </form>
+
+    </div>
+    <p id="responses">
+      TODO TODO TODO
+    </p>
+    <form id="question-input-form" action="/ask-question" method="POST" target="devnull" onsubmit="clear_question_form();">
+      <input type="text" id="q" name="q" placeholder="Who wrote this?" style="width:90%;" />
+      <input type="submit" value="Ask" style="width:6%;" />
+    </form>
+    <iframe name="devnull" style="display:none;"></iframe>
+    <script src="app.js"></script>
+  </body>
+</html>

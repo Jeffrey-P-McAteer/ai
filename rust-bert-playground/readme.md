@@ -36,7 +36,10 @@ cargo build --release
 ./target/release/rust-bert-playground[.exe] ./directory/of/documents "What color is the sky?"
 
 # Building + running source w/ arguments
-cargo build --release -- ./directory/of/documents "What color is the sky?"
+cargo run --release -- ./directory/of/documents "What color is the sky?"
+
+# Run HTTP server on port 8080
+cargo run --release -- '127.0.0.1:8080'
 ```
 
 # Misc

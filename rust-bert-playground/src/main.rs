@@ -1,4 +1,6 @@
 
+pub mod http_memory_server;
+
 use std::env;
 use std::path::Path;
 
@@ -45,9 +47,26 @@ During the first run the BERT language model will be downloaded here.
 
   println!("args = {:?}", &args);
 
-  if args.len() < 2 {
+  if args.len() == 2 {
+    return http_memory_server::run_server(
+      args[1].clone()
+    );
+  }
+
+  if args.len() < 3 {
     println!(r#"Usage:
       rust-bert-playground ./directory/of/documents "What color is the sky?"
+
+Or run a webserver on IP + port with:
+
+      rust-bert-playground 0.0.0.0:8080
+
+      rust-bert-playground 127.0.0.1:8080
+
+The webserver will use RUSTBERT_CACHE for model caching,
+but all procesed data (documents + answers) will be held in-memory
+and be unavailable after the process exits.
+
 "#);
     std::process::exit(1);
   }
