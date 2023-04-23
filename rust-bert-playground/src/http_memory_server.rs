@@ -231,6 +231,10 @@ pub fn run_server(ip_and_port: String) {
                       broadcast_to_websockets(&format!("Clearing {} documents...", query_documents_ref.len() ));
                       query_documents_ref.clear();
                     }
+                    if let Ok(mut messages_to_ws_ref) = MESSAGES_TO_WEBSOCKETS.write() {
+                      messages_to_ws_ref.clear();
+                    }
+
                   }
                 }
                 else if req_uri == "ask-question" {
