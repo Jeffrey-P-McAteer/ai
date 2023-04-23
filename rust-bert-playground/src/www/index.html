@@ -5,16 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>RustBert Document Analysis Server</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css"/>
+    <style>
+      body {
+        max-width: 46cm;
+      }
+    </style>
   </head>
   <body>
-    <h1 style="margin:0;">RustBert Document Analysis Server</h1>
+    <h1 style="margin:0;">RustBERT Document Analysis Server</h1>
     <br>
     <div id="documents">
       <form id="document-input-form" action="/add-document" method="POST" enctype="multipart/form-data" target="devnull" onsubmit="clear_document_form();" style="border: 1pt solid; border-radius: 8pt;">
         <b style="margin:2pt 4pt;">Add Document</b>
-        <input type="file" id="document" name="document" multiple style="width:65%;" />
+        <input type="file" id="document" name="document" multiple style="width:60%;" />
         <input type="submit" value="Add Document" />
+        <input type="submit" value="Clear All Documents" />
       </form>
 
     </div>

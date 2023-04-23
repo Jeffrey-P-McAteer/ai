@@ -70,14 +70,27 @@ pub fn question_answering_thread() {
             context_str += "\n";
           }
         }
-        println!("Using {} character context", context_str.len());
+        let num_words = words_count::count(&context_str);
+        
+        println!("Using {}-word context to answer question...", num_words.words);
+
+        broadcast_to_websockets(&format!("Using {}-word context to answer question...", num_words.words));
 
         for question_to_ask_i in last_question_i..questions_to_model.len() {
           let question_txt = String::new();
           let question_txt = questions_to_model.get(question_to_ask_i).unwrap_or(&question_txt);
           if question_txt.len() > 0 {
             println!("Asking {}", question_txt);
-            let answers = qa_model.predict(&[QaInput { question:question_txt.clone(), context:context_str.clone() }], 5,  4096);
+            let answers = qa_model.predict(
+              &[
+                QaInput { question:question_txt.clone(), context:context_str.clone() }
+              ],
+              // Number of answes to give
+              5,
+              // Number of answer quality steps
+              //4096
+              256,
+            );
             for answer in answers {
               for a in answer {
                 let answer_txt = format!("{:?}", a.answer);
@@ -156,6 +169,7 @@ pub fn run_server(ip_and_port: String) {
                 
                 println!("Received POST {}", req_uri);
                 if req_uri == "add-document" {
+                  let mut added_a_doc = false;
                   match multipart::server::Multipart::from_request(request) {
                     Ok(mut multipart_req) => {
 
@@ -185,6 +199,10 @@ pub fn run_server(ip_and_port: String) {
 
                           broadcast_to_websockets(&format!("Read {} words from {}", num_words.words, file_name));
 
+                          if num_words.words > 0 {
+                              added_a_doc = true;
+                            }
+
                           for _attempt_i in 0..100 { // try 100 times (up to 1s) to get a write mutex lock
                             if let Ok(mut query_documents_ref) = query_documents_arc.write() {
                               query_documents_ref.insert(
@@ -204,6 +222,14 @@ pub fn run_server(ip_and_port: String) {
                     },
                     Err(_e) => {
                       println!("Error, request is not multipart!");
+                    }
+                  }
+                  if !added_a_doc {
+                    // Must have been a clear command, clear all docs
+                    if let Ok(mut query_documents_ref) = query_documents_arc.write() {
+                      println!("Clearing {} documents...", query_documents_ref.len() );
+                      broadcast_to_websockets(&format!("Clearing {} documents...", query_documents_ref.len() ));
+                      query_documents_ref.clear();
                     }
                   }
                 }
