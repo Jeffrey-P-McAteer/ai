@@ -140,6 +140,9 @@ pub fn run_server(ip_and_port: String) {
               loop {
                 std::thread::sleep( std::time::Duration::from_millis(50) );
                 if let Ok(messages_to_ws_ref) = messages_to_websockets_arc.read() {
+                  if messages_to_ws_ref.len() < last_msg_i {
+                    last_msg_i = messages_to_ws_ref.len();
+                  }
                   if messages_to_ws_ref.len() > last_msg_i {
                     // Send messages last_msg_i -> messages_to_ws_ref.len()-1
                     for msg_to_send_i in last_msg_i..messages_to_ws_ref.len() {
