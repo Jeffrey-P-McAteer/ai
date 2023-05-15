@@ -33,7 +33,7 @@ fi
 if ! grep -q '/j/infra/ai/ai-disk' <<<"$storage_disk_mountpoint" ; then
   echo "Detected AI disk at $storage_disk_mountpoint but we want it at /j/infra/ai/ai-disk, unmounting..."
   sync
-  sudo umount $storage_disk_device
+  sudo umount $storage_disk_device || true
   sync
   storage_disk_mountpoint=$(mount | grep "$storage_disk_device" | cut -d' ' -f3)
 fi
